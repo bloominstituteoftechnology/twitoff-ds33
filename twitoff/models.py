@@ -16,12 +16,17 @@ class User(DB.Model):
     username = DB.Column(DB.String, nullable=False)
     # the backref down below automatically adds a list of tweets here
     # tweets = []
+    # newest tweet id column Schema
+    newest_tweet_id = DB.Column(DB.BigInteger)
 
 class Tweet(DB.Model):
     # ID Column Schema
     id = DB.Column(DB.BigInteger, primary_key=True, nullable=False)
     # Text Column Schema
     text = DB.Column(DB.Unicode(300), nullable=False)
+    # Word Embeddings (vect) Schema
+    # PickleType allows us to store a numpy array
+    vect = DB.Column(DB.PickleType, nullable=False)
     # User Column Schema
     user_id = DB.Column(DB.BigInteger, DB.ForeignKey('user.id'), nullable=False)
     # Set up a relationship between tweets and IDs

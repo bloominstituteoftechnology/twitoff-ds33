@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from .models import DB, User, Tweet
+from .twitter import add_or_update_user
 
 # Create a "factory" for serving up the app when it is launched 
 def create_app():
@@ -21,8 +22,26 @@ def create_app():
         # Do this when somebody hits the home page
         return render_template('base.html', users=users)
 
+    @app.route('/update')
+    def update():
+        users = User.query.all()
+        usernames = [user.username for user in users]
+        for username in usernames:
+            add_or_update_user(username)
+        return "updated"
+
+    # Make our "Home" or "root" route
+    @app.route('/populate')
+    def populate():
+        add_or_update_user('ryanallred')
+        add_or_update_user('nasa')
+        return '''Created some users. 
+        <a href='/'>Go to Home</a>
+        <a href='/reset'>Go to reset</a>
+        <a href='/populate'>Go to populate</a>'''
+
     # Test another route
-    @app.route('/test')
+    @app.route('/reset')
     def test():
         # removes everything from the DB
         DB.drop_all()
@@ -30,29 +49,10 @@ def create_app():
         DB.create_all()
         # Make some Users
         # create a user object from our .models class
-        ryan = User(id=1, username='ryanallred')
-        julian = User(id=2, username='julian')
-        # add the user to the database
-        DB.session.add(ryan)
-        DB.session.add(julian)
         
-        # Make some tweets
-        # display our new user on the page
-        # Make some tweets
-        tweet1 = Tweet(id=1, text='this is some tweet text', user=ryan)
-        tweet2 = Tweet(id=2, text='this is some other tweet text', user=julian)
-        # add the tweets to the DB Session
-        DB.session.add(tweet1)
-        DB.session.add(tweet2)
-        
-        # save the database
-        DB.session.commit()
-
-        # query to get all users
-        users = User.query.all()
-        return render_template('base.html', users=users, title='test')
-
-
-
+        return '''The database has been reset. 
+        <a href='/'>Go to Home</a>
+        <a href='/reset'>Go to reset</a>
+        <a href='/populate'>Go to populate</a>'''
 
     return app
