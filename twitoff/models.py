@@ -19,6 +19,9 @@ class User(DB.Model):
     # newest tweet id column Schema
     newest_tweet_id = DB.Column(DB.BigInteger)
 
+    def __repr__(self):
+        return f'<User: {self.username}>'
+
 class Tweet(DB.Model):
     # ID Column Schema
     id = DB.Column(DB.BigInteger, primary_key=True, nullable=False)
@@ -32,3 +35,6 @@ class Tweet(DB.Model):
     # Set up a relationship between tweets and IDs
     # This will automatically add a new id to both the tweet and the user
     user = DB.relationship('User', backref=DB.backref('tweets'), lazy=True)
+
+    def __repr__(self):
+        return f'<Tweet: {self.text}>'
